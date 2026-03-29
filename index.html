@@ -254,12 +254,12 @@ function startApp() {
     const bgMusic = document.getElementById('bgMusic');
     if(bgMusic) {
         // 1. SET VOLUME AWAL (Ganti 0.4 kalau masih kekecilan)
-        bgMusic.volume = 0.1; 
+        bgMusic.volume = 0.2; 
         bgMusic.play();
 
         // 2. FUNGSI MENAIKKAN VOLUME SECARA HALUS
-        let targetVolume =0.4 // Volume maksimal (100%)
-        let currentVol = 0.1;   // Harus sama dengan volume awal di atas
+        let targetVolume =0.5 // Volume maksimal (100%)
+        let currentVol = 0.2;   // Harus sama dengan volume awal di atas
         
         const fadeIn = setInterval(() => {
             if (currentVol < targetVolume) {
