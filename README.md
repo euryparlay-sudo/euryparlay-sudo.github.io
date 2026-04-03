@@ -35,7 +35,7 @@ Lihat website kami yang sudah mengudara di:
 ---
 
 ## 👨‍💻 Kontributor
-Dikelola dengan bangga oleh **euryparlay-sudo** untuk seluruh keluarga besar kelas X-A.
+Dikelola dengan bangga oleh **HNA** untuk seluruh keluarga besar kelas X-A.
 
 ---
 *Created with ❤️ and Logic for the Great People of X-A.*
