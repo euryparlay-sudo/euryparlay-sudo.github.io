@@ -1,0 +1,388 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-gold: var(--gold);
+  --color-ink: var(--ink);
+  --color-fog: var(--fog);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-courier);
+  --font-mono: var(--font-courier);
+  --font-display: var(--font-bebas);
+  --font-typewriter: var(--font-elite);
+}
+
+:root {
+  /* X-A archival palette: deep ink + warm gold + dust whites */
+  --background: #060608;
+  --foreground: rgba(255, 255, 255, 0.92);
+  --card: rgba(10, 10, 14, 0.7);
+  --card-foreground: rgba(255, 255, 255, 0.9);
+  --popover: rgba(10, 10, 14, 0.85);
+  --popover-foreground: rgba(255, 255, 255, 0.92);
+  --primary: #d4af37;
+  --primary-foreground: #060608;
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: rgba(255, 255, 255, 0.85);
+  --muted: rgba(255, 255, 255, 0.04);
+  --muted-foreground: rgba(255, 255, 255, 0.55);
+  --accent: rgba(212, 175, 55, 0.12);
+  --accent-foreground: #d4af37;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.95 0 0);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: rgba(212, 175, 55, 0.5);
+  --radius: 0.875rem;
+  --gold: #d4af37;
+  --ink: #0b0b10;
+  --fog: rgba(255, 255, 255, 0.055);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+    background: var(--background);
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-courier), "Courier Prime", monospace;
+  }
+}
+
+/* ====================================================
+   GLOBAL FILM GRAIN — the most important texture layer
+   ==================================================== */
+.film-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.2 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  animation: grainShift 0.45s steps(3) infinite;
+}
+@keyframes grainShift {
+  0% { transform: translate(0, 0); }
+  33% { transform: translate(-4px, 3px); }
+  66% { transform: translate(3px, -2px); }
+  100% { transform: translate(0, 0); }
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 45%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* ====================================================
+   CUSTOM CURSOR
+   ==================================================== */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 99999;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+.cursor-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--gold);
+  transition: transform 0.08s linear, width 0.25s, height 0.25s;
+}
+.cursor-ring {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s,
+    height 0.3s, border-color 0.3s, background 0.3s;
+  mix-blend-mode: difference;
+}
+.cursor-ring.hover {
+  width: 56px;
+  height: 56px;
+  border-color: rgba(212, 175, 55, 0.95);
+  background: rgba(212, 175, 55, 0.06);
+}
+.cursor-dot.hover {
+  width: 8px;
+  height: 8px;
+}
+@media (max-width: 768px), (pointer: coarse) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
+}
+
+/* ====================================================
+   TYPOGRAPHY
+   ==================================================== */
+.font-display {
+  font-family: var(--font-bebas), "Bebas Neue", sans-serif;
+  letter-spacing: 0.06em;
+}
+.font-typewriter {
+  font-family: var(--font-elite), "Special Elite", monospace;
+}
+
+/* ====================================================
+   SCROLLBAR
+   ==================================================== */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.25);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.5);
+}
+
+::selection {
+  background: rgba(212, 175, 55, 0.35);
+  color: #fff;
+}
+
+/* ====================================================
+   TWINKLING STARS
+   ==================================================== */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+.twinkle {
+  animation: twinkle var(--dur, 3s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+/* ====================================================
+   SHOOTING STAR
+   ==================================================== */
+@keyframes shoot {
+  0% { transform: translate(0, 0) rotate(var(--angle, -25deg)); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translate(var(--dx, 800px), var(--dy, 400px)) rotate(var(--angle, -25deg)); opacity: 0; }
+}
+.shooting-star {
+  position: absolute;
+  width: 110px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.95),
+    rgba(212, 175, 55, 0.6),
+    transparent
+  );
+  animation: shoot 2.4s linear forwards;
+  filter: blur(0.4px);
+}
+
+/* ====================================================
+   GATE BEAM
+   ==================================================== */
+@keyframes gateBeam {
+  0%, 100% { opacity: 0.06; }
+  50% { opacity: 0.16; }
+}
+.gate-beam {
+  animation: gateBeam 7s ease-in-out infinite;
+}
+
+/* ====================================================
+   FLOATING DUST PARTICLES
+   ==================================================== */
+@keyframes dust {
+  0% { transform: translate(0, 0); opacity: 0; }
+  10% { opacity: var(--peak, 0.5); }
+  90% { opacity: var(--peak, 0.5); }
+  100% { transform: translate(var(--dx, 30px), -110vh); opacity: 0; }
+}
+.dust-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 244, 200, 0.55);
+  animation: dust var(--dur, 18s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  filter: blur(0.4px);
+}
+
+/* ====================================================
+   SOUL CARD REVEALS — dramatic
+   ==================================================== */
+@keyframes scanLine {
+  0% { top: 0%; opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 175, 55, 0.95),
+    transparent
+  );
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.8);
+  animation: scanLine 0.9s ease-out forwards;
+  z-index: 5;
+  pointer-events: none;
+}
+
+@keyframes glitchX {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 1px); }
+  40% { transform: translate(2px, -1px); }
+  60% { transform: translate(-1px, 2px); }
+  80% { transform: translate(1px, -2px); }
+}
+.glitching {
+  animation: glitchX 0.4s linear;
+}
+
+/* ====================================================
+   MODAL TRANSITION
+   ==================================================== */
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.94) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-backdrop {
+  animation: backdropIn 0.35s ease-out forwards;
+}
+.modal-card {
+  animation: modalIn 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* ====================================================
+   TOAST
+   ==================================================== */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(20px) translateX(-50%); }
+  to { opacity: 1; transform: translateY(0) translateX(-50%); }
+}
+@keyframes toastOut {
+  to { opacity: 0; transform: translateY(-12px) translateX(-50%); }
+}
+.toast-in {
+  animation: toastIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.toast-out {
+  animation: toastOut 0.3s ease-in forwards;
+}
+
+/* ====================================================
+   REVEAL ON SCROLL
+   ==================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ====================================================
+   INTERACTIVE ELEMENTS - hide native cursor for hover
+   ==================================================== */
+@media (pointer: fine) {
+  body,
+  button,
+  a,
+  [role="button"],
+  input,
+  textarea {
+    cursor: none !important;
+  }
+}
+
+/* ====================================================
+   FOG OVERLAY (fragments)
+   ==================================================== */
+@keyframes fogDrift {
+  0%, 100% { transform: translate3d(-20px, 10px, 0) scale(1.05); }
+  50% { transform: translate3d(20px, -15px, 0) scale(1.1); }
+}
+.fog-overlay {
+  animation: fogDrift 11s ease-in-out infinite;
+}
+
+/* ====================================================
+   ICE CRACK REVEAL (hidden souls)
+   ==================================================== */
+@keyframes iceCrack {
+  0% { backdrop-filter: blur(14px); opacity: 1; }
+  40% { backdrop-filter: blur(8px); opacity: 0.8; }
+  100% { backdrop-filter: blur(0); opacity: 0; }
+}
+.ice-crack {
+  animation: iceCrack 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ====================================================
+   HEARTBEAT
+   ==================================================== */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  20% { transform: scale(1.15); opacity: 1; }
+  40% { transform: scale(1); opacity: 0.7; }
+  60% { transform: scale(1.1); opacity: 0.95; }
+}
+.heartbeat {
+  animation: heartbeat 2.4s ease-in-out infinite;
+}
