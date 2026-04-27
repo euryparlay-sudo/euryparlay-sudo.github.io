@@ -2,489 +2,1628 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0908">
+    <meta name="description" content="X-A — The Eternal Archive. A memorial chronicle of 43 souls, one year, infinite stories.">
+    <meta property="og:title" content="X-A | The Eternal Archive">
+    <meta property="og:description" content="not all memories stay... but this one will">
+    <meta property="og:type" content="website">
     <title>X-A | The Eternal Archive</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime&family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Special+Elite&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #d4af37; --dark: #070707; }
-        html, body { 
-            margin: 0; padding: 0; width: 100%; overflow-x: hidden; 
-            background: var(--dark); color: #eee; font-family: 'Courier Prime', monospace; 
+        /* ============================================
+           DESIGN TOKENS — 5 colors, 3 fonts
+           ============================================ */
+        :root {
+            --color-void:   #0a0908;   /* deepest dark, warm undertone */
+            --color-ink:    #15110d;   /* charcoal layer */
+            --color-gold:   #d4af37;   /* primary accent — memory, reverence */
+            --color-cream:  #e8d9b0;   /* warm text, sepia film */
+            --color-ember:  #8b3a3a;   /* emotional anchor, used sparingly */
+            --color-mist:   #6b6358;   /* muted whisper text */
+
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-serif:   'Cormorant Garamond', serif;
+            --font-type:    'Special Elite', monospace;
+
+            --radius: 2px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html, body {
+            margin: 0; padding: 0; width: 100%;
+            overflow-x: hidden;
+            background: var(--color-void);
+            color: var(--color-cream);
+            font-family: var(--font-serif);
+            font-weight: 300;
+            line-height: 1.6;
             scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* INTRO */
-        #intro-overlay { 
-            position: fixed; inset: 0; background: black; z-index: 9999; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            cursor: pointer; transition: 1s cubic-bezier(0.85, 0, 0.15, 1); text-align: center; 
-        }
-        .lift-up { transform: translateY(-100%); }
-        .intro-slogan { font-family: 'Special Elite'; color: #666; margin-top: 10px; font-size: 0.9rem; }
+        ::selection { background: var(--color-gold); color: var(--color-void); }
 
-        /* NAV */
-        nav { 
-            position: fixed; right: 15px; top: 50%; transform: translateY(-50%); 
-            display: flex; flex-direction: column; gap: 10px; z-index: 1000; opacity: 0; transition: 1s;
+        a { color: inherit; }
+        button { font-family: inherit; }
+
+        /* ============================================
+           ATMOSPHERIC LAYERS — grain, vignette, dust
+           ============================================ */
+        .grain-overlay {
+            position: fixed; inset: 0; z-index: 100;
+            pointer-events: none;
+            opacity: 0.08;
+            mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+            animation: grainShift 8s steps(6) infinite;
         }
-        nav a { 
-            width: 42px; height: 42px; border: 1px solid var(--gold); border-radius: 50%; 
-            color: var(--gold); display: flex; justify-content: center; align-items: center; 
-            font-size: 0.6rem; text-decoration: none; background: rgba(0,0,0,0.8); font-family: 'Bebas Neue'; 
+        @keyframes grainShift {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-3%, -2%); }
+            20% { transform: translate(2%, 1%); }
+            30% { transform: translate(-1%, 3%); }
+            40% { transform: translate(3%, -1%); }
+            50% { transform: translate(-2%, 2%); }
+            60% { transform: translate(1%, -3%); }
+            70% { transform: translate(-3%, 1%); }
+            80% { transform: translate(2%, 3%); }
+            90% { transform: translate(-1%, -2%); }
         }
 
-        section { min-height: 100vh; padding: 80px 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; }
-        
-        /* HOME */
-        #home { justify-content: center; text-align: center; }
-        #home-title { font-family: 'Bebas Neue'; color: var(--gold); font-size: clamp(5rem, 18vw, 12rem); margin: 0; line-height: 0.8; }
-        .slogan { font-family: 'Special Elite'; color: #888; margin-top: 15px; font-size: 0.9rem; }
-        .wali-kelas { font-size: 0.75rem; letter-spacing: 5px; color: #555; text-transform: uppercase; margin-top: 30px; }
+        .vignette {
+            position: fixed; inset: 0; z-index: 99;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.65) 100%);
+        }
 
-        /* TIMELINE */
-        .film-box { width: 100%; overflow: hidden; position: relative; padding: 40px 0; cursor: grab; }
+        .dust-field {
+            position: fixed; inset: 0; z-index: 98;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .dust {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: var(--color-cream);
+            border-radius: 50%;
+            opacity: 0;
+            animation: drift linear infinite;
+        }
+        @keyframes drift {
+            0% { transform: translate(0, 100vh) scale(0.3); opacity: 0; }
+            10% { opacity: 0.4; }
+            50% { opacity: 0.6; }
+            90% { opacity: 0.3; }
+            100% { transform: translate(var(--dx), -10vh) scale(0.8); opacity: 0; }
+        }
+
+        /* ============================================
+           CINEMATIC INTRO
+           ============================================ */
+        #intro-overlay {
+            position: fixed; inset: 0;
+            background: var(--color-void);
+            z-index: 9999;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            cursor: pointer;
+            transition: opacity 1.6s cubic-bezier(0.85, 0, 0.15, 1),
+                        transform 1.6s cubic-bezier(0.85, 0, 0.15, 1);
+            text-align: center;
+            padding: 20px;
+        }
+        #intro-overlay.lift-up { opacity: 0; transform: translateY(-100%); }
+
+        .intro-bracket {
+            font-family: var(--font-type);
+            color: var(--color-mist);
+            font-size: 0.65rem;
+            letter-spacing: 0.5em;
+            opacity: 0;
+            animation: fadeIn 1.4s ease-out 0.4s forwards;
+        }
+        .intro-title {
+            font-family: var(--font-display);
+            color: var(--color-gold);
+            font-size: clamp(6rem, 22vw, 14rem);
+            line-height: 0.85;
+            margin: 0.2em 0 0 0;
+            letter-spacing: 0.02em;
+            opacity: 0;
+            transform: scale(0.92);
+            animation: titleRise 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) 1s forwards;
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
+        }
+        .intro-rule {
+            width: 0;
+            height: 1px;
+            background: var(--color-gold);
+            margin: 1.5rem auto;
+            animation: ruleExpand 1.4s ease-out 2.2s forwards;
+        }
+        .intro-slogan {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--color-cream);
+            font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+            opacity: 0;
+            animation: fadeIn 1.6s ease-out 2.6s forwards;
+            max-width: 28ch;
+            line-height: 1.5;
+        }
+        .intro-cta {
+            font-family: var(--font-type);
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            color: var(--color-gold);
+            margin-top: 4rem;
+            opacity: 0;
+            animation: fadeIn 1.4s ease-out 3.6s forwards, pulse 2.2s ease-in-out 4.8s infinite;
+        }
+        .intro-cta::before, .intro-cta::after {
+            content: ""; display: inline-block;
+            width: 1.5em; height: 1px; background: var(--color-gold);
+            vertical-align: middle; margin: 0 0.8em;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes titleRise {
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes ruleExpand { to { width: 4rem; } }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ============================================
+           NAVIGATION — informative side rail
+           ============================================ */
+        nav.side-rail {
+            position: fixed;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex; flex-direction: column;
+            gap: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 1.2s ease-out 0.4s;
+        }
+        nav.side-rail.show { opacity: 1; }
+        nav.side-rail a {
+            position: relative;
+            width: 14px; height: 14px;
+            border: 1px solid var(--color-gold);
+            border-radius: 50%;
+            background: transparent;
+            text-decoration: none;
+            transition: all 0.4s ease;
+        }
+        nav.side-rail a::before {
+            content: "";
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            background: var(--color-gold);
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+        nav.side-rail a.active::before { transform: scale(1); }
+        nav.side-rail a:hover { border-color: var(--color-cream); }
+        nav.side-rail a span {
+            position: absolute;
+            right: calc(100% + 14px);
+            top: 50%;
+            transform: translateY(-50%) translateX(8px);
+            font-family: var(--font-type);
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            color: var(--color-cream);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        nav.side-rail a:hover span,
+        nav.side-rail a.active span {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        /* ============================================
+           SCROLL PROGRESS — top bar
+           ============================================ */
+        .scroll-progress {
+            position: fixed; top: 0; left: 0;
+            height: 1px;
+            background: var(--color-gold);
+            width: 0;
+            z-index: 1001;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+        }
+
+        /* ============================================
+           SECTION SHELL
+           ============================================ */
+        section {
+            min-height: 100vh;
+            padding: clamp(80px, 12vh, 140px) 20px;
+            box-sizing: border-box;
+            display: flex; flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .section-eyebrow {
+            font-family: var(--font-type);
+            font-size: 0.7rem;
+            letter-spacing: 0.45em;
+            color: var(--color-gold);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            opacity: 0.75;
+        }
+        .section-eyebrow::before, .section-eyebrow::after {
+            content: ""; display: inline-block;
+            width: 1.2em; height: 1px;
+            background: var(--color-gold);
+            vertical-align: middle;
+            margin: 0 0.7em;
+            opacity: 0.5;
+        }
+        .section-title {
+            font-family: var(--font-display);
+            color: var(--color-cream);
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            letter-spacing: 0.12em;
+            text-align: center;
+            margin: 0 0 0.5rem;
+            text-balance: balance;
+        }
+        .section-subtitle {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--color-mist);
+            font-size: 0.95rem;
+            text-align: center;
+            max-width: 36ch;
+            margin: 0 auto 3rem;
+            line-height: 1.5;
+            text-pretty: pretty;
+        }
+
+        /* ============================================
+           HOME — layered, statistical, anchored
+           ============================================ */
+        #home {
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .home-backdrop {
+            position: absolute; inset: 0;
+            background-image: url('img/anggota/9.jpg');
+            background-size: cover;
+            background-position: center;
+            filter: blur(28px) grayscale(0.7) brightness(0.35);
+            opacity: 0.35;
+            transform: scale(1.2);
+            z-index: 0;
+        }
+        .home-backdrop::after {
+            content: "";
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, var(--color-void) 75%);
+        }
+        .home-inner {
+            position: relative;
+            z-index: 2;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .home-eyebrow {
+            font-family: var(--font-type);
+            font-size: 0.7rem;
+            letter-spacing: 0.55em;
+            color: var(--color-gold);
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+        #home-title {
+            font-family: var(--font-display);
+            color: var(--color-gold);
+            font-size: clamp(6rem, 20vw, 14rem);
+            margin: 0;
+            line-height: 0.82;
+            letter-spacing: 0.01em;
+            text-shadow: 0 0 60px rgba(212, 175, 55, 0.18);
+        }
+        .home-slogan {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--color-cream);
+            font-size: clamp(1rem, 2.4vw, 1.3rem);
+            margin-top: 1rem;
+            max-width: 32ch;
+            line-height: 1.5;
+        }
+        .home-stats {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(1rem, 4vw, 2.5rem);
+            margin-top: 3rem;
+            font-family: var(--font-type);
+        }
+        .home-stat {
+            text-align: center;
+            display: flex; flex-direction: column;
+            gap: 0.3rem;
+        }
+        .home-stat-num {
+            font-family: var(--font-display);
+            color: var(--color-gold);
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            line-height: 1;
+        }
+        .home-stat-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            color: var(--color-mist);
+            text-transform: uppercase;
+        }
+        .home-stat-divider {
+            width: 1px;
+            height: 30px;
+            background: var(--color-mist);
+            opacity: 0.4;
+        }
+        .home-meta {
+            margin-top: 3rem;
+            font-family: var(--font-type);
+            font-size: 0.65rem;
+            letter-spacing: 0.35em;
+            color: var(--color-mist);
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+        .home-meta strong {
+            color: var(--color-cream);
+            font-weight: normal;
+        }
+        .scroll-cue {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-type);
+            font-size: 0.6rem;
+            letter-spacing: 0.4em;
+            color: var(--color-mist);
+            text-transform: uppercase;
+            display: flex; flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+            animation: scrollHint 2.4s ease-in-out infinite;
+        }
+        .scroll-cue::after {
+            content: "";
+            width: 1px;
+            height: 30px;
+            background: linear-gradient(to bottom, var(--color-gold), transparent);
+        }
+        @keyframes scrollHint {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
+            50% { transform: translateX(-50%) translateY(8px); opacity: 1; }
+        }
+
+        /* ============================================
+           TIMELINE — film strip with sprocket holes
+           ============================================ */
+        .film-shell {
+            width: 100%;
+            position: relative;
+            background: var(--color-ink);
+            border-top: 1px solid #2a241c;
+            border-bottom: 1px solid #2a241c;
+            margin-top: 2rem;
+        }
+        .film-shell::before, .film-shell::after {
+            content: "";
+            display: block;
+            height: 22px;
+            background-image:
+                radial-gradient(circle at 12px 50%, var(--color-void) 5px, transparent 5.5px);
+            background-size: 30px 22px;
+            background-repeat: repeat-x;
+            background-color: #1c1813;
+        }
+        .film-box {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            padding: 16px 0;
+            cursor: grab;
+        }
         .film-box:active { cursor: grabbing; }
-        .film-track { display: flex; width: max-content; gap: 30px; will-change: transform; pointer-events: none;transition:transform 0.1s linear; }
-        .film-frame { width: 280px; text-align: center; flex-shrink: 0; }
-        .film-frame img { width: 100%; height: 175px; object-fit: cover; border: 2px solid #333; cursor: zoom-in; pointer-events: auto; }
-        .timeline-label { color: var(--gold); font-size: 0.65rem; margin-top: 10px; font-family: 'Special Elite'; opacity: 0.7; }
-
-        /* MEMBER GRID & POLAROID */
-        .member-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; width: 92%; max-width: 1000px; margin: 40px auto; }
-        @media (min-width: 600px) { .member-grid { grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); } }
-        .polaroid { 
-            background: #fdfdfd; padding: 10px 10px 25px 10px; color: #222; 
-            transform: rotate(var(--r)); transition: 0.3s; cursor: pointer; position: relative; overflow: hidden;
+        .film-track {
+            display: flex;
+            width: max-content;
+            gap: 24px;
+            will-change: transform;
+            pointer-events: none;
+            transition: transform 0.1s linear;
         }
-        .polaroid img { width: 100%; height: 135px; object-fit: cover; transition: 0.3s; }
-        .polaroid.active { transform: rotate(0) scale(1.08) !important; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        /* Member Styles */
-        .style-blur img { filter: blur(15px); }
-        .style-lost { background: #111 !important; }
+        .film-frame {
+            width: clamp(220px, 32vw, 300px);
+            text-align: center;
+            flex-shrink: 0;
+            display: flex; flex-direction: column;
+        }
+        .film-frame-meta {
+            display: flex; justify-content: space-between;
+            font-family: var(--font-type);
+            font-size: 0.55rem;
+            letter-spacing: 0.25em;
+            color: var(--color-mist);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .film-frame-meta .num { color: var(--color-gold); }
+        .film-frame img {
+            width: 100%;
+            height: clamp(140px, 20vw, 190px);
+            object-fit: cover;
+            border: 1px solid #2a241c;
+            cursor: zoom-in;
+            pointer-events: auto;
+            filter: sepia(0.18) contrast(1.05) brightness(0.95);
+            transition: filter 0.5s ease, transform 0.5s ease;
+        }
+        .film-frame img:hover {
+            filter: sepia(0) contrast(1.1) brightness(1.05);
+        }
+        .film-label {
+            color: var(--color-cream);
+            font-size: 0.75rem;
+            margin-top: 10px;
+            font-family: var(--font-type);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .film-date {
+            color: var(--color-mist);
+            font-size: 0.6rem;
+            margin-top: 4px;
+            font-family: var(--font-type);
+            letter-spacing: 0.2em;
+        }
+
+        /* ============================================
+           MEMBERS — hierarchical, intentional
+           ============================================ */
+        .legend {
+            display: flex; flex-wrap: wrap; justify-content: center;
+            gap: 1.5rem 2rem;
+            font-family: var(--font-type);
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            color: var(--color-mist);
+            text-transform: uppercase;
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+        }
+        .legend-item { display: flex; align-items: center; gap: 0.6rem; }
+        .legend-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--color-gold);
+        }
+        .legend-dot.dim { background: var(--color-mist); opacity: 0.5; }
+        .legend-dot.empty {
+            background: transparent;
+            border: 1px dashed var(--color-mist);
+        }
+
+        .member-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            width: 92%;
+            max-width: 1100px;
+            margin: 0 auto 3rem;
+        }
+        @media (min-width: 600px) {
+            .member-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 22px;
+            }
+        }
+        .polaroid {
+            background: var(--color-cream);
+            padding: 10px 10px 22px;
+            color: var(--color-void);
+            transform: rotate(var(--r));
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .polaroid::before {
+            content: "";
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(0,0,0,0.04) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .polaroid:hover {
+            transform: rotate(0) translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+        }
+        .polaroid img {
+            width: 100%;
+            height: clamp(120px, 18vw, 150px);
+            object-fit: cover;
+            transition: filter 0.5s ease, opacity 0.5s ease;
+            filter: sepia(0.15) contrast(1.02);
+        }
+        .polaroid.active {
+            transform: rotate(0) scale(1.06) !important;
+            z-index: 100;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.7);
+        }
+
+        /* Member style variants — purposeful, not random */
+        .style-blur img { filter: blur(14px) sepia(0.3); }
+        .style-blur::after {
+            content: "FADING";
+            position: absolute; top: 8px; right: 8px;
+            font-family: var(--font-type);
+            font-size: 0.5rem;
+            letter-spacing: 0.2em;
+            color: var(--color-ember);
+            opacity: 0.6;
+        }
+        .style-lost {
+            background: var(--color-ink) !important;
+            color: var(--color-mist);
+        }
         .style-lost img { opacity: 0; }
-        .style-lost::after { content: "UNSEEN"; position: absolute; top: 40%; left: 0; width: 100%; text-align: center; color: #444; font-family: 'Bebas Neue'; font-size: 1rem; }
-        
-        /* Revealed State */
-        .revealed img { filter: blur(0); opacity: 1 !important; }
-        .revealed.style-lost { background: #fdfdfd !important; }
+        .style-lost::after {
+            content: "UNSEEN";
+            position: absolute; top: 42%; left: 0;
+            width: 100%; text-align: center;
+            color: var(--color-mist);
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            letter-spacing: 0.3em;
+        }
+
+        /* Revealed state */
+        .revealed img { filter: sepia(0.05) contrast(1.05) !important; opacity: 1 !important; }
+        .revealed.style-lost { background: var(--color-cream) !important; color: var(--color-void); }
         .revealed::after { display: none; }
 
-        /* Ganti baris .chairman yang lama dengan ini */
-.polaroid.chairman { 
-    border: 4px solid #d4af37 !important; /* Kita tebalkan jadi 4px */
-    box-shadow: 0 0 25px rgba(212, 175, 55, 0.9) !important; 
-    z-index: 10;
-    background: #fffcf0 !important; /* Sedikit krem emas agar beda */
-}
-
-/* Tambahkan ini juga agar nama Arasya jadi emas */
-.polaroid.chairman .name-tag {
-    color: #d4af37 !important;
-    font-weight: bold;
-}
-
-        .name-tag { font-family: 'Special Elite'; font-size: 0.75rem; color: inherit; margin-top: 10px; display: block; min-height: 1.2em; text-align: center; }
-
-        /* MODALS */
-        .modal { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9000; 
-            display: none; justify-content: center; align-items: center; flex-direction: column; padding: 20px;
+        /* Hierarchy badges */
+        .polaroid.chairman {
+            border: 2px solid var(--color-gold) !important;
+            box-shadow: 0 0 0 1px var(--color-void), 0 0 24px rgba(212, 175, 55, 0.55) !important;
+            z-index: 10;
+            background: #fffaea !important;
         }
-        .tm-content { text-align: center; max-width: 90%; }
-        .tm-image { max-width: 100%; max-height: 60vh; border: 2px solid #444; margin-bottom: 25px; }
-        .caption-text { 
-            font-family: 'Special Elite'; color: var(--gold); font-size: 1.1rem; 
-            line-height: 1.6; max-width: 700px; margin: 0 auto;
-            white-space: pre-wrap; word-spacing: 4px;
+        .polaroid.chairman::after {
+            content: "CHAIRMAN";
+            position: absolute; top: 8px; left: 8px;
+            background: var(--color-gold);
+            color: var(--color-void);
+            font-family: var(--font-type);
+            font-size: 0.5rem;
+            letter-spacing: 0.2em;
+            padding: 2px 6px;
         }
-        .profile-card { width: 290px; background: #fff; border-radius: 15px; text-align: center; color: #111; overflow: hidden; animation: pop 0.3s ease-out; }
-        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .polaroid.chairman .name-tag {
+            color: var(--color-gold) !important;
+            font-weight: 500;
+        }
+        .polaroid.vice {
+            border: 1px solid rgba(212, 175, 55, 0.6) !important;
+        }
+        .polaroid.vice::after {
+            content: "VICE";
+            position: absolute; top: 8px; left: 8px;
+            background: var(--color-cream);
+            color: var(--color-void);
+            font-family: var(--font-type);
+            font-size: 0.5rem;
+            letter-spacing: 0.2em;
+            padding: 2px 6px;
+            border: 1px solid var(--color-gold);
+        }
+        .polaroid.officer::after {
+            content: attr(data-role);
+            position: absolute; top: 8px; left: 8px;
+            background: transparent;
+            color: var(--color-void);
+            font-family: var(--font-type);
+            font-size: 0.5rem;
+            letter-spacing: 0.2em;
+            padding: 2px 6px;
+            border: 1px solid var(--color-void);
+        }
+        .name-tag {
+            font-family: var(--font-type);
+            font-size: 0.78rem;
+            color: inherit;
+            margin-top: 10px;
+            display: block;
+            min-height: 1.2em;
+            text-align: center;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
 
-        /* ARCHIVE */
-        .archive-grid { column-count: 2; column-gap: 10px; width: 100%; max-width: 1000px; }
-        .archive-item { break-inside: avoid; margin-bottom: 10px; border: 1px solid #222; padding: 5px; }
-        .archive-item img { width: 100%; filter: grayscale(1); }
+        /* ============================================
+           WHISPER — memorial pause section
+           ============================================ */
+        #whisper {
+            min-height: 70vh;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(180deg, var(--color-void) 0%, var(--color-ink) 50%, var(--color-void) 100%);
+        }
+        .whisper-mark {
+            font-family: var(--font-display);
+            color: var(--color-gold);
+            font-size: 4rem;
+            line-height: 1;
+            opacity: 0.6;
+            margin-bottom: 1.5rem;
+        }
+        .whisper-quote {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-weight: 300;
+            color: var(--color-cream);
+            font-size: clamp(1.3rem, 3.2vw, 2rem);
+            line-height: 1.5;
+            max-width: 28ch;
+            margin: 0 auto;
+            text-balance: balance;
+        }
+        .whisper-attr {
+            font-family: var(--font-type);
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            color: var(--color-mist);
+            text-transform: uppercase;
+            margin-top: 2rem;
+        }
+        .whisper-attr::before {
+            content: "—";
+            margin-right: 0.6em;
+        }
 
-        .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s; }
+        /* ============================================
+           ARCHIVE — masonry fragments with captions
+           ============================================ */
+        .archive-grid {
+            column-count: 2;
+            column-gap: 14px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        @media (min-width: 700px) { .archive-grid { column-count: 3; } }
+        .archive-item {
+            break-inside: avoid;
+            margin-bottom: 14px;
+            position: relative;
+            background: var(--color-ink);
+            padding: 8px 8px 14px;
+            cursor: pointer;
+            transition: transform 0.4s ease;
+        }
+        .archive-item:hover { transform: translateY(-3px); }
+        .archive-item img {
+            width: 100%;
+            display: block;
+            filter: grayscale(0.85) sepia(0.15) contrast(1.05);
+            transition: filter 0.5s ease;
+        }
+        .archive-item:hover img { filter: grayscale(0) sepia(0) contrast(1.1); }
+        .archive-caption {
+            font-family: var(--font-type);
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            color: var(--color-mist);
+            text-transform: uppercase;
+            margin-top: 8px;
+            padding: 0 4px;
+            text-align: left;
+        }
+        .archive-caption::before {
+            content: "/ ";
+            color: var(--color-gold);
+        }
+
+        /* ============================================
+           ENDING — slow fade to silence
+           ============================================ */
+        .ending {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 3rem 1rem 2rem;
+            font-family: var(--font-type);
+            color: var(--color-mist);
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+        }
+        .ending-mark {
+            font-family: var(--font-display);
+            color: var(--color-gold);
+            font-size: 2rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 1rem;
+            opacity: 0.6;
+        }
+        .ending-rule {
+            width: 60px; height: 1px;
+            background: var(--color-gold);
+            margin: 1.5rem auto;
+            opacity: 0.4;
+        }
+
+        /* ============================================
+           MODALS
+           ============================================ */
+        .modal {
+            position: fixed; inset: 0;
+            background: rgba(10, 9, 8, 0.97);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9000;
+            display: none;
+            justify-content: center; align-items: center;
+            flex-direction: column;
+            padding: 24px;
+            animation: modalFade 0.4s ease-out;
+        }
+        @keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+
+        .tm-content {
+            text-align: center;
+            max-width: 90%;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .tm-frame {
+            position: relative;
+            padding: 8px;
+            background: var(--color-ink);
+            border: 1px solid #2a241c;
+            margin-bottom: 25px;
+        }
+        .tm-frame::before, .tm-frame::after {
+            content: "FRAME"; position: absolute;
+            font-family: var(--font-type);
+            font-size: 0.55rem;
+            letter-spacing: 0.3em;
+            color: var(--color-mist);
+            top: -22px; left: 0;
+        }
+        .tm-frame::after { content: "X-A · ARCHIVE"; left: auto; right: 0; }
+        .tm-image {
+            max-width: 100%;
+            max-height: 55vh;
+            display: block;
+            filter: sepia(0.1) contrast(1.05);
+        }
+        .tm-caption {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--color-cream);
+            font-size: clamp(1rem, 2.4vw, 1.25rem);
+            line-height: 1.7;
+            max-width: 600px;
+            margin: 0 auto;
+            white-space: pre-wrap;
+            min-height: 3em;
+        }
+        .modal-return {
+            margin-top: 2rem;
+            background: transparent;
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold);
+            padding: 12px 28px;
+            cursor: pointer;
+            font-family: var(--font-type);
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        .modal-return:hover {
+            background: var(--color-gold);
+            color: var(--color-void);
+        }
+
+        .profile-card {
+            width: 320px;
+            max-width: 100%;
+            background: var(--color-cream);
+            text-align: center;
+            color: var(--color-void);
+            overflow: hidden;
+            animation: cardPop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+        }
+        @keyframes cardPop {
+            from { transform: scale(0.85) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .profile-banner {
+            height: 90px;
+            background: linear-gradient(135deg, var(--color-ink) 0%, var(--color-void) 100%);
+            position: relative;
+        }
+        .profile-banner::after {
+            content: "";
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--color-gold);
+        }
+        .profile-img {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--color-cream);
+            margin: -60px auto 8px;
+            object-fit: cover;
+            display: block;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+        .profile-body { padding: 0 24px 28px; }
+        .profile-role {
+            display: inline-block;
+            background: var(--color-gold);
+            color: var(--color-void);
+            font-family: var(--font-type);
+            font-size: 0.55rem;
+            padding: 4px 12px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .profile-name {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            margin: 0.6rem 0 0.3rem;
+            color: var(--color-void);
+            letter-spacing: 0.05em;
+        }
+        .profile-ig {
+            color: var(--color-mist);
+            font-size: 0.8rem;
+            font-family: var(--font-type);
+            letter-spacing: 0.1em;
+            margin: 0;
+        }
+        .profile-quote {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 0.85rem;
+            color: #555048;
+            margin-top: 1rem;
+            line-height: 1.5;
+        }
+
+        .easter-content {
+            padding: 40px 30px;
+            text-align: center;
+            max-width: 620px;
+            border: 1px solid var(--color-gold);
+            background: rgba(21, 17, 13, 0.6);
+            position: relative;
+        }
+        .easter-content::before {
+            content: "";
+            position: absolute;
+            inset: 6px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            pointer-events: none;
+        }
+        .easter-mark {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: var(--color-gold);
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+        #easter-text {
+            font-family: var(--font-serif);
+            font-style: italic;
+            color: var(--color-cream);
+            line-height: 1.9;
+            font-size: clamp(1rem, 2.6vw, 1.2rem);
+            white-space: pre-wrap;
+            min-height: 4em;
+        }
+        .easter-attr {
+            font-family: var(--font-type);
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            color: var(--color-gold);
+            margin-top: 2rem;
+            opacity: 0.8;
+        }
+
+        /* ============================================
+           REVEAL ANIMATIONS
+           ============================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
         .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* ============================================
+           ACCESSIBILITY
+           ============================================ */
+        .sr-only {
+            position: absolute;
+            width: 1px; height: 1px;
+            padding: 0; margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid var(--color-gold);
+            outline-offset: 4px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+            .grain-overlay, .dust-field { display: none; }
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 600px) {
+            nav.side-rail { right: 12px; gap: 12px; }
+            .home-stats { flex-wrap: wrap; gap: 1rem 1.5rem; }
+            .home-stat-divider { display: none; }
+        }
     </style>
 </head>
 <body>
 
-    <audio id="bgMusic" src="music.mp3" loop></audio>
-    <audio id="clickSfx" src="https://www.soundjay.com/buttons/button-16.mp3"></audio>
+    <!-- AUDIO -->
+    <audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
+    <audio id="clickSfx" src="https://www.soundjay.com/buttons/button-16.mp3" preload="auto"></audio>
 
-    <div id="intro-overlay" onclick="startApp()">
-        <h1 style="font-family:'Bebas Neue'; font-size: 8rem; color: var(--gold); margin:0;">X-A</h1>
-        <p class="intro-slogan">"not all memories stay... but this one will"</p>
-        <p style="font-size: 0.6rem; letter-spacing: 4px; margin-top: 50px; color: var(--gold); opacity: 0.5;">[ TAP TO ENTER ARCHIVE ]</p>
+    <!-- ATMOSPHERIC LAYERS -->
+    <div class="grain-overlay" aria-hidden="true"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="dust-field" id="dustField" aria-hidden="true"></div>
+
+    <!-- SCROLL PROGRESS -->
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+    <!-- CINEMATIC INTRO -->
+    <div id="intro-overlay" onclick="startApp()" role="button" tabindex="0" aria-label="Tap to enter the archive" onkeydown="if(event.key==='Enter'||event.key===' ')startApp()">
+        <p class="intro-bracket">[ THE ETERNAL ARCHIVE ]</p>
+        <h1 class="intro-title">X-A</h1>
+        <div class="intro-rule" aria-hidden="true"></div>
+        <p class="intro-slogan">"not all memories stay…<br>but this one will"</p>
+        <p class="intro-cta">TAP TO ENTER</p>
     </div>
 
-    <nav id="mainNav">
-        <a href="#home">H</a><a href="#timeline">T</a><a href="#anggota">S</a><a href="#archive">A</a>
+    <!-- NAVIGATION -->
+    <nav class="side-rail" id="mainNav" aria-label="Section navigation">
+        <a href="#home" data-section="home"><span>HOME</span></a>
+        <a href="#timeline" data-section="timeline"><span>TIMELINE</span></a>
+        <a href="#anggota" data-section="anggota"><span>SOULS</span></a>
+        <a href="#whisper" data-section="whisper"><span>WHISPER</span></a>
+        <a href="#archive" data-section="archive"><span>FRAGMENTS</span></a>
     </nav>
 
-    <section id="home">
-        <h1 id="home-title" class="reveal">X-A</h1>
-        <p class="slogan">one class, one thousand stories</p>
-        <div class="wali-kelas">Wali Kelas: Pak Aziz Ali</div>
+    <!-- HOME -->
+    <section id="home" aria-labelledby="home-title">
+        <div class="home-backdrop" aria-hidden="true"></div>
+        <div class="home-inner">
+            <p class="home-eyebrow">EST · 2025</p>
+            <h1 id="home-title" class="reveal">X-A</h1>
+            <p class="home-slogan">one class, one thousand stories</p>
+            <div class="home-stats" aria-label="Class statistics">
+                <div class="home-stat">
+                    <span class="home-stat-num">43</span>
+                    <span class="home-stat-label">Souls</span>
+                </div>
+                <div class="home-stat-divider" aria-hidden="true"></div>
+                <div class="home-stat">
+                    <span class="home-stat-num">01</span>
+                    <span class="home-stat-label">Year</span>
+                </div>
+                <div class="home-stat-divider" aria-hidden="true"></div>
+                <div class="home-stat">
+                    <span class="home-stat-num">∞</span>
+                    <span class="home-stat-label">Memories</span>
+                </div>
+            </div>
+            <p class="home-meta">Wali Kelas · <strong>Pak Aziz Ali</strong></p>
+        </div>
+        <div class="scroll-cue" aria-hidden="true">SCROLL</div>
     </section>
 
-    <section id="timeline" class="reveal">
-        <h2 style="font-family:'Bebas Neue'; color:var(--gold); text-align:center; letter-spacing:4px;">THE CINEMATIC TIMELINE</h2>
-        <div class="film-box" id="filmBox">
-            <div class="film-track" id="tTrack"></div>
+    <!-- TIMELINE -->
+    <section id="timeline" class="reveal" aria-labelledby="timeline-title">
+        <p class="section-eyebrow">CHAPTER ONE</p>
+        <h2 class="section-title" id="timeline-title">THE CINEMATIC TIMELINE</h2>
+        <p class="section-subtitle">Frame by frame, the year unspooled. Each still — a heartbeat we forgot we kept.</p>
+        <div class="film-shell" aria-hidden="false">
+            <div class="film-box" id="filmBox">
+                <div class="film-track" id="tTrack" role="list"></div>
+            </div>
         </div>
     </section>
 
-    <section id="anggota" class="reveal">
-        <h2 style="font-family:'Bebas Neue'; color:var(--gold); text-align:center; letter-spacing:4px;">THE 43 SOULS</h2>
-        <div class="member-grid" id="mGrid"></div>
+    <!-- MEMBERS -->
+    <section id="anggota" class="reveal" aria-labelledby="souls-title">
+        <p class="section-eyebrow">CHAPTER TWO</p>
+        <h2 class="section-title" id="souls-title">THE 43 SOULS</h2>
+        <p class="section-subtitle">Tap a polaroid to remember a face. Some have stayed close. Some have drifted into silence. All belong here.</p>
+        <div class="legend" aria-label="Legend">
+            <div class="legend-item"><span class="legend-dot" aria-hidden="true"></span>PRESENT</div>
+            <div class="legend-item"><span class="legend-dot dim" aria-hidden="true"></span>FADING</div>
+            <div class="legend-item"><span class="legend-dot empty" aria-hidden="true"></span>UNSEEN</div>
+        </div>
+        <div class="member-grid" id="mGrid" role="list"></div>
     </section>
 
-    <section id="archive" class="reveal">
-        <h2 style="font-family:'Bebas Neue'; color:var(--gold); text-align:center; letter-spacing:4px;">THE FRAGMENTS</h2>
-        <div class="archive-grid" id="aGrid"></div>
-        <div id="end-trigger" style="height:50px; width:100%;"></div>
+    <!-- WHISPER — memorial pause -->
+    <section id="whisper" class="reveal" aria-labelledby="whisper-title">
+        <div class="whisper-mark" aria-hidden="true">"</div>
+        <h2 class="sr-only" id="whisper-title">A whisper between chapters</h2>
+        <p class="whisper-quote">Some rooms outlive the years that fill them. Ours will be one of those rooms.</p>
+        <p class="whisper-attr">an interlude</p>
     </section>
 
-    <div id="timeline-modal" class="modal" onclick="this.style.display='none'">
+    <!-- ARCHIVE -->
+    <section id="archive" class="reveal" aria-labelledby="fragments-title">
+        <p class="section-eyebrow">CHAPTER THREE</p>
+        <h2 class="section-title" id="fragments-title">THE FRAGMENTS</h2>
+        <p class="section-subtitle">Loose photographs. Half-remembered light. The pieces that did not fit anywhere else — and could not be thrown away.</p>
+        <div class="archive-grid" id="aGrid" role="list"></div>
+        <div class="ending" aria-hidden="false">
+            <div class="ending-mark">FIN</div>
+            <div class="ending-rule"></div>
+            <p>The archive remains open.</p>
+            <p style="margin-top:0.5rem; opacity:0.6;">X-A · 2025 · Pak Aziz Ali</p>
+        </div>
+        <div id="end-trigger" style="height:30px; width:100%;" aria-hidden="true"></div>
+    </section>
+
+    <!-- TIMELINE MODAL -->
+    <div id="timeline-modal" class="modal" onclick="closeModal('timeline-modal')" role="dialog" aria-modal="true" aria-label="Memory frame">
         <div class="tm-content" onclick="event.stopPropagation()">
-            <img class="tm-image" src="" id="tm-img">
-            <div class="tm-caption caption-text" id="tm-cap"></div>
-            <button onclick="document.getElementById('timeline-modal').style.display='none'" style="margin-top:30px; background:none; border:1px solid var(--gold); color:var(--gold); padding:10px 25px; cursor:pointer; font-family:'Bebas Neue';">RETURN</button>
+            <div class="tm-frame">
+                <img class="tm-image" src="" id="tm-img" alt="">
+            </div>
+            <p class="tm-caption" id="tm-cap"></p>
+            <button class="modal-return" onclick="closeModal('timeline-modal')">RETURN</button>
         </div>
     </div>
 
-    <div id="profile-modal" class="modal" onclick="this.style.display='none'">
+    <!-- PROFILE MODAL -->
+    <div id="profile-modal" class="modal" onclick="closeModal('profile-modal')" role="dialog" aria-modal="true" aria-label="Member profile">
         <div class="profile-card" onclick="event.stopPropagation()">
-            <div style="height:70px; background:#111;"></div>
-            <img id="p-img" src="" style="width:110px; height:110px; border-radius:50%; border:4px solid #fff; margin:-55px auto 10px; object-fit:cover;">
-            <div style="padding:20px;">
-                <div id="p-role" style="background:var(--gold); font-size:0.65rem; padding:2px 10px; border-radius:10px; display:inline-block; font-family:'Bebas Neue'; color:#000;">MEMBER</div>
-                <h3 id="p-name" style="font-family:'Bebas Neue'; font-size:2.2rem; margin:10px 0 5px;"></h3>
-                <p id="p-ig" style="color:#888; font-size:0.8rem; margin-bottom:15px; font-family:'Courier Prime';">IG: @nama_ig_kamu</p>
+            <div class="profile-banner" aria-hidden="true"></div>
+            <img id="p-img" class="profile-img" src="" alt="">
+            <div class="profile-body">
+                <div id="p-role" class="profile-role">MEMBER</div>
+                <h3 id="p-name" class="profile-name"></h3>
+                <p id="p-ig" class="profile-ig"></p>
+                <p class="profile-quote" id="p-quote">— part of the forty-three —</p>
             </div>
         </div>
     </div>
 
-    <div id="easter-modal" class="modal" onclick="this.style.display='none'">
-        <div style="padding:40px; text-align:center; max-width:600px;">
-            <p id="easter-text" style="font-family:'Special Elite'; color:var(--gold); line-height:2; font-size:1.1rem; white-space: pre-wrap;"></p>
+    <!-- EASTER EGG MODAL -->
+    <div id="easter-modal" class="modal" onclick="closeModal('easter-modal')" role="dialog" aria-modal="true" aria-label="A hidden message">
+        <div class="easter-content" onclick="event.stopPropagation()">
+            <div class="easter-mark" aria-hidden="true">"</div>
+            <p id="easter-text"></p>
+            <p class="easter-attr">— HNA</p>
         </div>
     </div>
 
     <script>
+        /* ============================================
+           DATA
+           ============================================ */
         const names = ["afdhan","agung","aisyah","ajeng","alwi","alya","alya z","alysa","arasya","athaya","aurel","azfa","denaya","dimitri","elvina","fahmy","farah","feren","firman","hamdan","ibrahim","kaira","krishna","laura","lovita","meirin","meilinda","mentari","rafa","nanda","naura","pricillia","putik","putri","qisya","rania","reihan","sekar","shanum","syamsid","zico","vondra","faiz"];
+
         const personalData = {
-  "afdhan": { ig: "@putraamfibii", role: "member" },
-  "agung": { ig: "@agngarrd", role: "member" },
-  "aisyah": { ig: "...", role: "member" },
-  "ajeng": { ig: "@alyaa212025", role: "secretary" },
-  "alwi": { ig: "@alwixaxa", role: "member" },
-  "alya": { ig: "@al.ya861", role: "member" },
-"alya z": { ig: "@alyaaptrrr_", role: "member" },
-  "alysa": { ig: "@alysazaamira", role: "member" },
-  "arasya": { ig: "@rsyxaa", role: "CHAIRMAN" },
-  "athaya": { ig: "@athtrityazz", role: "member" },
-  "aurel": { ig: "@aaurelrl_", role: "vice chairman" },
-  "azfa": { ig: "@azffaaaa", role: "member" },
-  "denaya": { ig: "...", role: "member" },
-  "dimitri": { ig: "@d1mm14", role: "member" },
-  "elvina": { ig: "@_vinnael", role: "member" },
-  "fahmy": { ig: "@fahmyakbr_", role: "member" },
-  "faiz": { ig: "@ysfa313_", role: "member" },
-  "farah": { ig: "@_frhkamilaa", role: "member" },
-  "feren": { ig: "@yoraassee", role: "member" },
-  "firman": { ig: "@frmnnmaul_", role: "member" },
-  "hamdan": { ig: "d4n_az", role: "member" },
-  "ibrahim": { ig: "@sxcazddd_", role: "member" },
-  "kaira": { ig: "@kaiikaiira", role: "member" },
-  "krishna": { ig: "@_cloverrr7_", role: "member" },
+            "afdhan":   { ig: "@putraamfibii",   role: "member" },
+            "agung":    { ig: "@agngarrd",       role: "member" },
+            "aisyah":   { ig: "—",               role: "member" },
+            "ajeng":    { ig: "@alyaa212025",    role: "secretary" },
+            "alwi":     { ig: "@alwixaxa",       role: "member" },
+            "alya":     { ig: "@al.ya861",       role: "member" },
+            "alya z":   { ig: "@alyaaptrrr_",    role: "member" },
+            "alysa":    { ig: "@alysazaamira",   role: "member" },
+            "arasya":   { ig: "@rsyxaa",         role: "chairman" },
+            "athaya":   { ig: "@athtrityazz",    role: "member" },
+            "aurel":    { ig: "@aaurelrl_",      role: "vice chairman" },
+            "azfa":     { ig: "@azffaaaa",       role: "member" },
+            "denaya":   { ig: "—",               role: "member" },
+            "dimitri":  { ig: "@d1mm14",         role: "member" },
+            "elvina":   { ig: "@_vinnael",       role: "member" },
+            "fahmy":    { ig: "@fahmyakbr_",     role: "member" },
+            "faiz":     { ig: "@ysfa313_",       role: "member" },
+            "farah":    { ig: "@_frhkamilaa",    role: "member" },
+            "feren":    { ig: "@yoraassee",      role: "member" },
+            "firman":   { ig: "@frmnnmaul_",     role: "member" },
+            "hamdan":   { ig: "@d4n_az",         role: "member" },
+            "ibrahim":  { ig: "@sxcazddd_",      role: "member" },
+            "kaira":    { ig: "@kaiikaiira",     role: "member" },
+            "krishna":  { ig: "@_cloverrr7_",    role: "member" },
+            "laura":    { ig: "@c4n_91",         role: "member" },
+            "lovita":   { ig: "@veetallov_",     role: "member" },
+            "meilinda": { ig: "@meii_hdy",       role: "member" },
+            "meirin":   { ig: "@dgirlr1n",       role: "treasurer" },
+            "mentari":  { ig: "@mntariie_",      role: "member" },
+            "nanda":    { ig: "@nndazzlra_",     role: "member" },
+            "naura":    { ig: "@nrathsn",        role: "treasurer" },
+            "pricillia":{ ig: "@pricillia_calista", role: "member" },
+            "putik":    { ig: "—",               role: "secretary" },
+            "putri":    { ig: "@putriirika.r_",  role: "member" },
+            "qisya":    { ig: "@qissyaadle",     role: "member" },
+            "rafa":     { ig: "@vzet69",         role: "member" },
+            "rania":    { ig: "@raniaabwzr_",    role: "member" },
+            "reihan":   { ig: "@w2.mee",         role: "member" },
+            "sekar":    { ig: "@iyhin.s",        role: "member" },
+            "shanum":   { ig: "@shnmsyp",        role: "member" },
+            "syamsid":  { ig: "@zsyam150",       role: "member" },
+            "vondra":   { ig: "@vdralizka_",     role: "member" },
+            "zico":     { ig: "@yugo0oo_",       role: "member" }
+        };
 
-  "laura": { ig: "c4n_91", role: "member" },
-  "lovita": { ig: "@veetallov_", role: "member" },
-  "meilinda": { ig: "@meii_hdy", role: "member" },
-  "meirin": { ig: "@dgirlr1n", role: "treasurer" },
-  "mentari": { ig: "@mntariie_", role: "member" },
-  "nanda": { ig: "@nndazzlra_", role: "member" },
-  "naura": { ig: "@nrathsn", role: "treasurer" },
-  "pricillia": { ig: "@pricillia_calista", role: "member" },
-  "putik": { ig: "...", role: "secretary" },
-  "putri": { ig: "@putriirika.r_", role: "" },
-  "qisya": { ig: "@qissyaadle", role: "member" },
-  "rafa": { ig: "@vzet69", role: "member" },
-  "rania": { ig: "@raniaabwzr_", role: "member" },
-  "reihan": { ig: "@w2.mee", role: "member" },
-  "sekar": { ig: "@iyhin.s", role: "member" },
-  "shanum": { ig: "@shnmsyp", role: "member" },
-  "syamsid": { ig: "@zsyam150", role: "member" },
-  "vondra": { ig: "@vdralizka_", role: "member" },
-  "zico": { ig: "@yugo0oo_", role: "member" }
-};
-      // 1. DATA TIMELINE
-const timelineLabels = ["DAY ONE", "lab fisika", "math teacher", "new class", "maulid", "post-dance", "teachers day", "post-drama", "munggahan", "iftar", "..."];
+        // Timeline data — labels + dates + captions
+        const timeline = [
+            { label: "DAY ONE",        date: "JUL · 2024", text: "semuanya dimulai dari sini…\nmasih asing, masih saling melihat." },
+            { label: "LAB FISIKA",     date: "AUG · 2024", text: "kelas pertama bersama…\nmasih jaim, masih belum kenal semua." },
+            { label: "MATH TEACHER",   date: "AUG · 2024", text: "antara angka dan kebingungan…\nkita tetap jalanin bersama." },
+            { label: "NEW CLASS",      date: "SEP · 2024", text: "ruangan baru…\ntapi cerita terus berlanjut." },
+            { label: "MAULID",         date: "SEP · 2024", text: "sejenak lebih tenang…\ndi tengah hari-hari yang ramai." },
+            { label: "POST-DANCE",     date: "OCT · 2024", text: "capek banget…\ntapi seru juga." },
+            { label: "TEACHERS DAY",   date: "NOV · 2024", text: "hari untuk mereka…\nyang sabar menghadapi kita." },
+            { label: "POST-DRAMA",     date: "DEC · 2024", text: "ga sedikit proses di balik ini…\ndan akhirnya selesai juga." },
+            { label: "MUNGGAHAN",      date: "FEB · 2025", text: "makan bareng sebelum puasa…\nsesederhana itu, tapi berasa." },
+            { label: "IFTAR",          date: "MAR · 2025", text: "berbuka bersama…\nditemani tawa dan obrolan ringan." },
+            { label: "TO BE CONT.",    date: "ON · GOING", text: "dan ini belum selesai…\nkita masih di tengah cerita." }
+        ];
 
-const moments = [
-    `semuanya dimulai dari sini… masih asing, masih saling melihat`,
-    `kelas pertama… masih jaim, masih belum kenal semua`,
-    `antara angka dan kebingungan… kita tetap jalanin bersama`,
-    `ruangan baru… tapi cerita terus berlanjut`,
-    `sejenak lebih tenang… di tengah hari-hari yang ramai`,
-    `capek banget… tapi seru juga`,
-    `hari untuk mereka… yang sabar menghadapi kita`,
-    `ga sedikit proses di balik ini… dan akhirnya selesai juga`,
-    `makan bareng sebelum puasa… sesederhana itu, tapi berasa`,
-    `berbuka bersama… ditemani tawa dan obrolan ringan`,
-    `dan ini belum selesai… kita masih di tengah cerita`
-];
+        // Archive captions — poetic micro-copy
+        const archiveCaptions = [
+            "lampu kelas, hari pertama",
+            "tertawa tanpa alasan",
+            "di antara tugas yang menumpuk",
+            "siang yang panjang",
+            "papan tulis, jejak kapur",
+            "selasar yang sepi",
+            "deretan tas, deretan cerita",
+            "pelajaran yang lupa namanya",
+            "bayangan sore",
+            "potret yang tak direncanakan",
+            "menunggu bel pulang",
+            "satu sudut yang kita rindukan"
+        ];
 
+        /* ============================================
+           STATE
+           ============================================ */
+        let isDown = false;
+        let startX;
+        let currentPos = 200;
+        let resumeTimer;
+        let isAutoScrolling = false;
 
-// 2. VARIABEL KONTROL (PASTIKAN HANYA ADA DI SINI)
-let isDown = false; 
-let startX; 
-let currentPos = 200; // Mulai dari 200px agar ada jarak kosong (hitam) di awal
-let resumeTimer; 
-let isAutoScrolling = false; 
-
-// 3. FUNGSI START APP
-function startApp() {
-    const sfx = document.getElementById('clickSfx');
-    const bgMusic = document.getElementById('bgMusic');
-    if(bgMusic) {
-        // 1. SET VOLUME AWAL (Ganti 0.4 kalau masih kekecilan)
-        bgMusic.volume = 0.2; 
-        bgMusic.play();
-
-        // 2. FUNGSI MENAIKKAN VOLUME SECARA HALUS
-        let targetVolume =0.5 // Volume maksimal (100%)
-        let currentVol = 0.2;   // Harus sama dengan volume awal di atas
-        
-        const fadeIn = setInterval(() => {
-            if (currentVol < targetVolume) {
-                currentVol += 0.05; // Naik pelan-pelan (0.02 = 2%)
-                // Pastikan tidak lebih dari 1.0 agar tidak error
-                bgMusic.volume = Math.min(currentVol, 1);
-            } else {
-                clearInterval(fadeIn); // Berhenti jika sudah sampai target
+        /* ============================================
+           DUST PARTICLES
+           ============================================ */
+        function spawnDust() {
+            const field = document.getElementById('dustField');
+            if (!field) return;
+            for (let i = 0; i < 20; i++) {
+                const d = document.createElement('div');
+                d.className = 'dust';
+                d.style.left = Math.random() * 100 + '%';
+                d.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
+                d.style.animationDuration = (12 + Math.random() * 18) + 's';
+                d.style.animationDelay = (Math.random() * 10) + 's';
+                d.style.width = d.style.height = (1 + Math.random() * 2) + 'px';
+                field.appendChild(d);
             }
-        }, 150); // Kecepatan interval (150ms = 0.15 detik)
-    }
-    document.getElementById('intro-overlay').classList.add('lift-up');
-    document.getElementById('mainNav').style.opacity = "1";
+        }
+        spawnDust();
 
-    renderTimeline();
-    renderMembers();
-    renderArchive();
-    startAutoScroll(); 
-}
+        /* ============================================
+           START APP — cinematic ignition
+           ============================================ */
+        function startApp() {
+            const sfx = document.getElementById('clickSfx');
+            const bgMusic = document.getElementById('bgMusic');
 
-// 4. RENDER TIMELINE
-function renderTimeline() {
-    const track = document.getElementById('tTrack');
-    if (!track) return;
-    track.innerHTML = "";
-    
-    // Tambahkan ruang kosong di awal (Efek Mulai dari Hitam)
-    track.innerHTML += `<div style="min-width: 50vw;"></div>`;
+            if (bgMusic) {
+                bgMusic.volume = 0.0;
+                const playPromise = bgMusic.play();
+                if (playPromise) playPromise.catch(() => {});
 
-    timelineLabels.forEach((label, i) => {
-        track.innerHTML += `
-            <div class="film-frame">
-                <img src="img/timeline/${i+1}.jpg" onclick="openTimeline(${i}, this.src)" onerror="this.src='https://via.placeholder.com/300x175/111/d4af37?text=PHOTO+${i+1}'">
-                <div class="timeline-label">${label}</div> 
-            </div>`;
-    });
-    track.innerHTML += track.innerHTML; 
-}
+                let currentVol = 0;
+                const targetVolume = 0.45;
+                const fadeIn = setInterval(() => {
+                    if (currentVol < targetVolume) {
+                        currentVol = Math.min(currentVol + 0.04, targetVolume);
+                        bgMusic.volume = currentVol;
+                    } else {
+                        clearInterval(fadeIn);
+                    }
+                }, 180);
+            }
 
-// 5. AUTO SCROLL MESIN
-function startAutoScroll() {
-    const track = document.getElementById('tTrack');
-    if (!track) return;
-    function step() {
-        if(isAutoScrolling && !isDown) {
-            currentPos -= 0.8; 
-            // Jika sudah lewat semua foto, reset ke posisi awal (dengan jarak hitam)
-            if (Math.abs(currentPos) >= track.scrollWidth / 2) currentPos = 200;
+            const intro = document.getElementById('intro-overlay');
+            intro.classList.add('lift-up');
+            setTimeout(() => { intro.style.display = 'none'; }, 1700);
+
+            document.getElementById('mainNav').classList.add('show');
+
+            renderTimeline();
+            renderMembers();
+            renderArchive();
+            startAutoScroll();
+        }
+
+        /* ============================================
+           TIMELINE
+           ============================================ */
+        function renderTimeline() {
+            const track = document.getElementById('tTrack');
+            if (!track) return;
+            track.innerHTML = "";
+
+            // Leading dark space (cinematic black)
+            track.insertAdjacentHTML('beforeend', `<div style="min-width: 40vw;" aria-hidden="true"></div>`);
+
+            timeline.forEach((item, i) => {
+                const num = String(i + 1).padStart(2, '0');
+                track.insertAdjacentHTML('beforeend', `
+                    <div class="film-frame" role="listitem">
+                        <div class="film-frame-meta">
+                            <span class="num">FRAME ${num}</span>
+                            <span>${item.date}</span>
+                        </div>
+                        <img src="img/timeline/${i+1}.jpg"
+                             alt="${item.label} — memory ${num}"
+                             onclick="openTimeline(${i}, this.src)"
+                             onerror="this.src='https://via.placeholder.com/300x190/15110d/d4af37?text=FRAME+${num}'">
+                        <div class="film-label">${item.label}</div>
+                    </div>`);
+            });
+
+            // Duplicate for seamless loop
+            track.insertAdjacentHTML('beforeend', track.innerHTML);
+        }
+
+        function startAutoScroll() {
+            const track = document.getElementById('tTrack');
+            if (!track) return;
+            function step() {
+                if (isAutoScrolling && !isDown) {
+                    currentPos -= 0.7;
+                    if (Math.abs(currentPos) >= track.scrollWidth / 2) currentPos = 200;
+                    track.style.transform = `translateX(${currentPos}px)`;
+                }
+                requestAnimationFrame(step);
+            }
+            step();
+        }
+
+        function openTimeline(idx, src) {
+            isAutoScrolling = false;
+            const modal = document.getElementById('timeline-modal');
+            document.getElementById('tm-img').src = src;
+            document.getElementById('tm-img').alt = timeline[idx].label;
+            modal.style.display = 'flex';
+            duckMusic();
+            typeWriter(timeline[idx].text, document.getElementById('tm-cap'), 45);
+        }
+
+        function holdTimeline(e) {
+            isDown = true; isAutoScrolling = false;
+            clearTimeout(resumeTimer);
+            const x = (e.pageX || (e.touches && e.touches[0].pageX) || 0);
+            startX = x - currentPos;
+        }
+        function moveTimeline(e) {
+            if (!isDown) return;
+            if (e.cancelable) e.preventDefault();
+            const track = document.getElementById('tTrack');
+            const x = (e.pageX || (e.touches && e.touches[0].pageX) || 0);
+            currentPos = x - startX;
             track.style.transform = `translateX(${currentPos}px)`;
         }
-        requestAnimationFrame(step);
-    }
-    step();
-}
-
-// 6. FUNGSI INTERAKSI
-function openTimeline(idx, src) { 
-    isAutoScrolling = false;  
-    const modal = document.getElementById('timeline-modal'); 
-    document.getElementById('tm-img').src = src; 
-    modal.style.display = 'flex'; 
-    typeWriter(moments[idx], document.getElementById('tm-cap'), 50); 
-}
-
-function holdTimeline(e) { 
-    isDown = true; isAutoScrolling = false; 
-    clearTimeout(resumeTimer); 
-    const x = (e.pageX || e.touches[0].pageX);
-    startX = x - currentPos; 
-}
-
-function moveTimeline(e) { 
-    if(!isDown) return; 
-    e.preventDefault(); 
-    const track = document.getElementById('tTrack');
-    const x = (e.pageX || e.touches[0].pageX);
-    currentPos = x - startX; 
-    track.style.transform = `translateX(${currentPos}px)`; 
-}
-
-function releaseTimeline() { 
-    isDown = false; 
-    resumeTimer = setTimeout(() => { isAutoScrolling = true; }, 1000); 
-}
-
-// 7. SENSOR "TRIGGER" (JALAN PAS DI TENGAH LAYAR)
-const timelineObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        const track = document.getElementById('tTrack');
-        if (entry.isIntersecting) {
-            isAutoScrolling = true; 
-        } else {
-            isAutoScrolling = false;
-            currentPos = 200; // Kembalikan ke posisi awal (hitam)
-            if(track) track.style.transform = `translateX(200px)`;
+        function releaseTimeline() {
+            isDown = false;
+            resumeTimer = setTimeout(() => { isAutoScrolling = true; }, 1200);
         }
-    });
-}, { threshold: 0.7 }); // Harus 70% muncul (pas di tengah) baru jalan
 
-const timelineSection = document.getElementById('timeline');
-if (timelineSection) timelineObserver.observe(timelineSection);
+        const timelineObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const track = document.getElementById('tTrack');
+                if (entry.isIntersecting) {
+                    isAutoScrolling = true;
+                } else {
+                    isAutoScrolling = false;
+                    currentPos = 200;
+                    if (track) track.style.transform = `translateX(200px)`;
+                }
+            });
+        }, { threshold: 0.6 });
 
-// 8. EVENT LISTENERS
-const filmBox = document.getElementById('filmBox');
-if (filmBox) {
-    filmBox.addEventListener('mousedown', holdTimeline); 
-    window.addEventListener('mouseup', releaseTimeline); 
-    filmBox.addEventListener('mousemove', moveTimeline);
-    filmBox.addEventListener('touchstart', holdTimeline, { passive: true }); 
-    filmBox.addEventListener('touchend', releaseTimeline); 
-    filmBox.addEventListener('touchmove', moveTimeline, { passive: false });
-}
+        const timelineSection = document.getElementById('timeline');
+        if (timelineSection) timelineObserver.observe(timelineSection);
 
+        const filmBox = document.getElementById('filmBox');
+        if (filmBox) {
+            filmBox.addEventListener('mousedown', holdTimeline);
+            window.addEventListener('mouseup', releaseTimeline);
+            filmBox.addEventListener('mousemove', moveTimeline);
+            filmBox.addEventListener('touchstart', holdTimeline, { passive: true });
+            filmBox.addEventListener('touchend', releaseTimeline);
+            filmBox.addEventListener('touchmove', moveTimeline, { passive: false });
+        }
 
+        /* ============================================
+           MEMBERS — purposeful style logic
+           ============================================ */
+        // Fixed "fading" set — purposeful, not random
+        const FADING_NAMES   = new Set(["aisyah", "denaya", "putik", "syamsid"]);
+        const UNSEEN_NAMES   = new Set(["putri", "rafa"]);
 
         function renderMembers() {
-    const mGrid = document.getElementById('mGrid');
-    const memberList = names.map((name, index) => ({ name, photoId: index + 1 }));
-    const shuffled = [...memberList].sort(() => Math.random() - 0.7);
-    shuffled.push({ name: "mystery-family", photoId: 44 });
+            const mGrid = document.getElementById('mGrid');
+            const memberList = names.map((name, index) => ({ name, photoId: index + 1 }));
 
-    // Array untuk mengingat status kolom (karena kita punya 2 kolom di mobile)
-    let prevColSpecial = [false, false]; 
-    let lastInRowSpecial = false;
+            // Deterministic but visually pleasing order: chairman first, vice second, officers next, rest by name
+            const chairman = memberList.find(m => personalData[m.name]?.role === "chairman");
+            const vice     = memberList.find(m => personalData[m.name]?.role === "vice chairman");
+            const officers = memberList.filter(m =>
+                ["secretary", "treasurer"].includes(personalData[m.name]?.role)
+            );
+            const rest = memberList
+                .filter(m => !["chairman", "vice chairman", "secretary", "treasurer"]
+                    .includes(personalData[m.name]?.role))
+                .sort((a, b) => a.name.localeCompare(b.name));
 
-    shuffled.forEach((person, index) => {
-        const pol = document.createElement('div');
-        pol.className = `polaroid`;
-        
-        const col = index % 2; // 0 untuk kiri, 1 untuk kanan
-        let currentStyle = 'style-normal';
-        
-        const isArasya = person.name.toLowerCase() === 'arasya';
-        const isFamily = person.name === 'mystery-family';
+            const ordered = [chairman, vice, ...officers, ...rest].filter(Boolean);
+            ordered.push({ name: "mystery-family", photoId: 44 });
 
-        if (isArasya) {
-            pol.classList.add('chairman');
-            currentStyle = 'style-normal';
-            lastInRowSpecial = false;
-            prevColSpecial[col] = false;
-        } else if (isFamily) {
-            currentStyle = 'style-lost';
-            // Family tidak kita hitung sebagai 'special' agar tidak merusak pola teman-teman
-        } else {
-            // ATURAN: Hanya boleh Special jika:
-            // 1. Teman di sampingnya NORMAL ( !lastInRowSpecial )
-            // 2. Teman di atasnya NORMAL ( !prevColSpecial[col] )
-            if (!lastInRowSpecial && !prevColSpecial[col] && Math.random() > 0.5) {
-                currentStyle = Math.random() > 0.5 ? 'style-blur' : 'style-lost';
-                lastInRowSpecial = true;
-                prevColSpecial[col] = true;
-            } else {
-                currentStyle = 'style-normal';
-                lastInRowSpecial = false;
-                prevColSpecial[col] = false;
-            }
-        }
+            ordered.forEach((person, index) => {
+                const pol = document.createElement('div');
+                pol.className = 'polaroid';
+                pol.setAttribute('role', 'listitem');
+                pol.setAttribute('tabindex', '0');
 
-        // Jika sudah di akhir baris (kolom kanan), reset catatan baris untuk baris baru
-        if (col === 1) lastInRowSpecial = false;
+                const isArasya = person.name.toLowerCase() === 'arasya';
+                const isVice   = person.name.toLowerCase() === 'aurel';
+                const role     = personalData[person.name]?.role;
+                const isFamily = person.name === 'mystery-family';
 
-        pol.classList.add(currentStyle);
-        pol.style.setProperty('--r', `${Math.random()*6-3}deg`);
-        
-        // --- Sisanya sama dengan kode sebelumnya (InnerHTML & Onclick) ---
-        if (isFamily) {
-            pol.innerHTML = `<div id="tag-${person.photoId}" class="name-tag" style="margin-top: 60px;"></div>`;
-        } else {
-            pol.innerHTML = `<img src="img/anggota/${person.photoId}.jpg" onerror="this.src='https://via.placeholder.com/150/222/d4af37?text=X-A'"><div id="tag-${person.photoId}" class="name-tag"></div>`;
-        }
+                let currentStyle = 'style-normal';
 
-        let eeClicks = 0;
-        pol.onclick = (e) => {
-            e.stopPropagation();
-            if(typeof sfx !== 'undefined') { sfx.currentTime = 0; sfx.play(); }
-            pol.classList.add('revealed');
-            document.querySelectorAll('.polaroid').forEach(p => p.classList.remove('active'));
-            pol.classList.add('active');
-            const tag = document.getElementById(`tag-${person.photoId}`);
-            if (!isFamily) {
-                if(tag && tag.innerText === "") typeWriter(person.name.toUpperCase(), tag, 60);
-            } else {
-                if(tag && tag.innerText === "") typeWriter("FAMILY", tag, 60);
-                eeClicks++;
-                if(eeClicks === 5 && typeof showEasterEgg === 'function') {
-                    showEasterEgg("Mungkin kita akan berjalan di jalan yang berbeda nantinya, tapi ingatlah bahwa di ruangan X-A ini, kita pernah menjadi satu keluarga yang paling berisik dan paling bahagia.");
+                if (isArasya) {
+                    pol.classList.add('chairman');
+                } else if (isVice) {
+                    pol.classList.add('vice');
+                } else if (role === "secretary" || role === "treasurer") {
+                    pol.classList.add('officer');
+                    pol.setAttribute('data-role', role.toUpperCase().slice(0, 3));
+                } else if (isFamily) {
+                    currentStyle = 'style-lost';
+                } else if (FADING_NAMES.has(person.name)) {
+                    currentStyle = 'style-blur';
+                } else if (UNSEEN_NAMES.has(person.name)) {
+                    currentStyle = 'style-lost';
                 }
+
+                pol.classList.add(currentStyle);
+                // Subtle, controlled tilt — psychological "scattered photo" feel
+                const tilt = ((index * 37) % 7 - 3);
+                pol.style.setProperty('--r', `${tilt}deg`);
+
+                if (isFamily) {
+                    pol.setAttribute('aria-label', 'A hidden chapter');
+                    pol.innerHTML = `<div id="tag-${person.photoId}" class="name-tag" style="margin-top: 60px;"></div>`;
+                } else {
+                    pol.setAttribute('aria-label', `Polaroid of ${person.name}`);
+                    pol.innerHTML = `
+                        <img src="img/anggota/${person.photoId}.jpg"
+                             alt="${person.name}"
+                             onerror="this.src='https://via.placeholder.com/200/15110d/d4af37?text=X-A'">
+                        <div id="tag-${person.photoId}" class="name-tag"></div>`;
+                }
+
+                let eeClicks = 0;
+                const sfx = document.getElementById('clickSfx');
+
+                pol.onclick = (e) => {
+                    e.stopPropagation();
+                    if (sfx) { sfx.currentTime = 0; sfx.volume = 0.3; sfx.play().catch(()=>{}); }
+                    pol.classList.add('revealed');
+                    document.querySelectorAll('.polaroid').forEach(p => p.classList.remove('active'));
+                    pol.classList.add('active');
+                    const tag = document.getElementById(`tag-${person.photoId}`);
+                    if (!isFamily) {
+                        if (tag && tag.innerText === "") typeWriter(person.name.toUpperCase(), tag, 55);
+                    } else {
+                        if (tag && tag.innerText === "") typeWriter("FAMILY", tag, 60);
+                        eeClicks++;
+                        if (eeClicks === 5) {
+                            showEasterEgg("Mungkin kita akan berjalan di jalan yang berbeda nantinya,\ntapi ingatlah bahwa di ruangan X-A ini,\nkita pernah menjadi satu keluarga\nyang paling berisik\ndan paling bahagia.");
+                        }
+                    }
+                };
+                pol.onkeydown = (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pol.click(); }
+                };
+                pol.ondblclick = () => { if (!isFamily) openProfile(person.name, person.photoId); };
+                mGrid.appendChild(pol);
+            });
+        }
+
+        /* ============================================
+           ARCHIVE — fragments with captions
+           ============================================ */
+        function renderArchive() {
+            const aGrid = document.getElementById('aGrid');
+            for (let i = 1; i <= 12; i++) {
+                aGrid.insertAdjacentHTML('beforeend', `
+                    <figure class="archive-item" role="listitem">
+                        <img src="img/archive/${i}.jpg" loading="lazy" alt="Archive fragment ${i}">
+                        <figcaption class="archive-caption">${archiveCaptions[i-1] || 'a fragment'}</figcaption>
+                    </figure>`);
             }
-        };
-        pol.ondblclick = () => { if (!isFamily) openProfile(person.name, person.photoId); };
-        mGrid.appendChild(pol);
-    });
-}
+        }
 
-
-
-
-
-
-                
-
-        function renderArchive() { const aGrid = document.getElementById('aGrid'); for(let i=1; i<=12; i++) { aGrid.innerHTML += `<div class="archive-item"><img src="img/archive/${i}.jpg" loading="lazy"></div>`; } }
-
-        const observerEnd = new IntersectionObserver((entries) => { if(entries[0].isIntersecting) { setTimeout(() => { showEasterEgg("“Kalau kamu sampai di sini…\nberarti kamu benar-benar melihat semuanya.\nTerima kasih… sudah menghargai cerita ini.\n— HNA”"); }, 1000); observerEnd.unobserve(document.getElementById('end-trigger')); } }, { threshold: 1.0 });
+        /* ============================================
+           ENDING TRIGGER — HNA easter egg
+           ============================================ */
+        const observerEnd = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                setTimeout(() => {
+                    showEasterEgg("Kalau kamu sampai di sini…\nberarti kamu benar-benar melihat semuanya.\n\nTerima kasih…\nsudah menghargai cerita ini.");
+                }, 1200);
+                observerEnd.unobserve(document.getElementById('end-trigger'));
+            }
+        }, { threshold: 1.0 });
         observerEnd.observe(document.getElementById('end-trigger'));
 
-        function showEasterEgg(text) { const m = document.getElementById('easter-modal'); m.style.display = 'flex'; typeWriter(text, document.getElementById('easter-text'), 50); }
+        function showEasterEgg(text) {
+            const m = document.getElementById('easter-modal');
+            m.style.display = 'flex';
+            duckMusic();
+            typeWriter(text, document.getElementById('easter-text'), 55);
+        }
 
+        /* ============================================
+           PROFILE
+           ============================================ */
         function openProfile(name, id) {
-    // Mencari data di personalData, kalau tidak ada pakai default
-    const data = personalData[name] || { ig: `@${name}_archive`, role: "MEMBER" };
-    
-    document.getElementById('p-img').src = `img/anggota/${id}.jpg`;
-    document.getElementById('p-name').innerText = name.toUpperCase();
-    
-    // Mengisi Jabatan & IG ke Modal secara otomatis
-    document.getElementById('p-role').innerText = data.role;
-    document.getElementById('p-ig').innerText = `IG: ${data.ig}`;
-    
-    document.getElementById('profile-modal').style.display = 'flex';
-}
+            const data = personalData[name] || { ig: '—', role: 'member' };
+            document.getElementById('p-img').src = `img/anggota/${id}.jpg`;
+            document.getElementById('p-img').alt = name;
+            document.getElementById('p-name').innerText = name.toUpperCase();
+            document.getElementById('p-role').innerText = (data.role || 'member').toUpperCase();
+            document.getElementById('p-ig').innerText = data.ig === '—' ? '— private —' : `IG · ${data.ig}`;
+            document.getElementById('profile-modal').style.display = 'flex';
+            duckMusic();
+        }
 
-        function typeWriter(text, element, speed) { element.innerText = ""; let i = 0; function type() { if (i < text.length) { element.innerText += text.charAt(i); i++; setTimeout(type, speed); } } type(); }
-        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        /* ============================================
+           UTILITIES
+           ============================================ */
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+            restoreMusic();
+        }
+
+        function duckMusic() {
+            const m = document.getElementById('bgMusic');
+            if (!m) return;
+            const target = 0.15;
+            const step = setInterval(() => {
+                if (m.volume > target + 0.02) m.volume = Math.max(target, m.volume - 0.04);
+                else { m.volume = target; clearInterval(step); }
+            }, 80);
+        }
+        function restoreMusic() {
+            const m = document.getElementById('bgMusic');
+            if (!m) return;
+            const target = 0.45;
+            const step = setInterval(() => {
+                if (m.volume < target - 0.02) m.volume = Math.min(target, m.volume + 0.03);
+                else { m.volume = target; clearInterval(step); }
+            }, 100);
+        }
+
+        function typeWriter(text, element, speed) {
+            element.innerText = "";
+            let i = 0;
+            (function type() {
+                if (i < text.length) {
+                    element.innerText += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            })();
+        }
+
+        /* ============================================
+           REVEAL ON SCROLL
+           ============================================ */
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        /* ============================================
+           SCROLL PROGRESS + ACTIVE NAV
+           ============================================ */
+        const progressBar = document.getElementById('scrollProgress');
+        const navLinks = document.querySelectorAll('nav.side-rail a');
+        const sections = ['home','timeline','anggota','whisper','archive']
+            .map(id => document.getElementById(id));
+
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            progressBar.style.width = (scrolled / docHeight * 100) + '%';
+
+            // Update active nav
+            const center = scrolled + window.innerHeight / 2;
+            let activeId = 'home';
+            sections.forEach(sec => {
+                if (sec && sec.offsetTop <= center) activeId = sec.id;
+            });
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.dataset.section === activeId);
+            });
+        }, { passive: true });
+
+        /* ============================================
+           ESC closes modals
+           ============================================ */
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                ['timeline-modal','profile-modal','easter-modal'].forEach(id => {
+                    const m = document.getElementById(id);
+                    if (m && m.style.display === 'flex') closeModal(id);
+                });
+            }
+        });
     </script>
 </body>
 </html>
